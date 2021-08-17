@@ -80,4 +80,5 @@ class Status
 
         return $this;
     }
+
 }
