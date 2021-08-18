@@ -35,4 +35,11 @@
     <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>
 
     {{ include('ticket/_delete_form.html.twig') }}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Submit') }}</button>
+    {{ form_end(form) }}
+
+
 {% endblock %}

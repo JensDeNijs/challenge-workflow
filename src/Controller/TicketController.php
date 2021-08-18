@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Status;
 use App\Entity\Ticket;
+use App\Form\CommentType;
 use App\Form\TicketType;
 use App\Repository\StatusRepository;
 use App\Repository\TicketRepository;
@@ -31,7 +33,6 @@ class TicketController extends AbstractController
         $status = new Status();
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $ticket->setEscalated(false);
             $ticket->setStatus($statusRepo->find(1));
@@ -53,11 +54,38 @@ class TicketController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'ticket_show', methods: ['GET'])]
-    public function show(Ticket $ticket): Response
+    #[Route('/{id}', name: 'ticket_show', methods: ['GET','POST'])]
+    public function show(Ticket $ticket, Request $request, TicketRepository $ticketRepo): Response
     {
-        return $this->render('ticket/show.html.twig', [
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        var_dump($request->get('id'));
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $comment->setPrivate(false);
+
+            $dateNow = new \DateTime('now' , new \DateTimeZone('Europe/Brussels'));
+            $comment->setDate( $dateNow);
+
+            $comment->setTicketID($ticketRepo->find($request->get('id')));
+            $comment->setUserID($this->get('security.token_storage')->getToken()->getUser());
+
+
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('ticket_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+
+        return $this->renderForm('ticket/show.html.twig', [
             'ticket' => $ticket,
+            'form' => $form,
         ]);
     }
 
@@ -82,7 +110,7 @@ class TicketController extends AbstractController
     #[Route('/{id}', name: 'ticket_delete', methods: ['POST'])]
     public function delete(Request $request, Ticket $ticket): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $ticket->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($ticket);
             $entityManager->flush();
