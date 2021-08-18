@@ -13,6 +13,7 @@
                 <th>Subject</th>
                 <th>TicketMessage</th>
                 <th>DateClosed</th>
+                <th>createdBy</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -23,8 +24,8 @@
                 <td>{{ ticket.escalated ? 'Yes' : 'No' }}</td>
                 <td>{{ ticket.subject }}</td>
                 <td>{{ ticket.ticketMessage }}</td>
-                <td>{{ ticket.createdBy }}</td>
                 <td>{{ ticket.dateClosed ? ticket.dateClosed|date('Y-m-d') : '' }}</td>
+                <td>{{ ticket.createdBy }}</td>
                 <td>
                     <a href="{{ path('ticket_show', {'id': ticket.id}) }}">show</a>
                     <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>

@@ -36,7 +36,7 @@ class TicketController extends AbstractController
             $ticket->setEscalated(false);
             $ticket->setStatus($statusRepo->find(1));
 
-            /*$ticket->setCreatedBy($user->getEmail());*/
+            $ticket->setCreatedBy($this->get('security.token_storage')->getToken()->getUser());
 
 
             $entityManager = $this->getDoctrine()->getManager();
