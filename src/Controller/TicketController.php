@@ -7,6 +7,7 @@ use App\Entity\Status;
 use App\Entity\Ticket;
 use App\Form\CommentType;
 use App\Form\TicketType;
+use App\Repository\CommentRepository;
 use App\Repository\StatusRepository;
 use App\Repository\TicketRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,8 +63,11 @@ class TicketController extends AbstractController
     /**
      * @Route("/{id}", name="ticket_show", methods={"GET", "POST"})
      */
-    public function show(Ticket $ticket, Request $request, TicketRepository $ticketRepo): Response
+    public function show(Ticket $ticket, Request $request, TicketRepository $ticketRepo, CommentRepository $commentRepo): Response
     {
+
+        $comments = $commentRepo->findBy(array('ticketID' => $ticket->getId()));
+
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
@@ -91,6 +95,7 @@ class TicketController extends AbstractController
 
 
         return $this->renderForm('ticket/show.html.twig', [
+            'comments' => $comments,
             'ticket' => $ticket,
             'form' => $form,
         ]);
