@@ -9,7 +9,7 @@
         </li>
 
         <li>
-            <a href="{{ path('ticket_index') }}">My Tickets</a>
+            <a href="{{ path('mytickets') }}">My Tickets</a>
         </li>
         {% else %}
             <li>
@@ -18,7 +18,10 @@
         {% endif %}
         {% if is_granted('ROLE_AGENT')%}
             <li>
-                <a href="{{ path('home_page') }}">All Tickets</a>
+                <a href="{{ path('alltickets') }}">All Tickets</a>
+            </li>
+            <li>
+                <a href="{{ path('assignedtickets') }}">My Assigned Tickets</a>
             </li>
         {% endif %}
     </ul>

@@ -25,8 +25,52 @@ class TicketController extends AbstractController
      */
     public function index(TicketRepository $ticketRepository): Response
     {
+        $user = $this->getUser();
+        $roles = $user->getRoles();
+
+       if (in_array("ROLE_AGENT", $roles)){
+            $tickets = $ticketRepository -> findBy(array('assignedTo' => $user));
+        }
+
+        elseif (in_array("ROLE_USER", $roles)){
+            $tickets = $ticketRepository -> findBy(array('createdBy' => $user));
+        }
+
+        return $this->render('ticket/index.html.twig', [
+            'tickets' => $tickets,
+        ]);
+    }
+
+    /**
+     * @Route("/mytickets", name="mytickets", methods="GET")
+     */
+    public function mytickets(TicketRepository $ticketRepository): Response
+    {
+        $user = $this->getUser();
+        $tickets = $ticketRepository -> findBy(array('createdBy' => $user));
+        return $this->render('ticket/index.html.twig', [
+            'tickets' => $tickets,
+        ]);
+    }
+
+    /**
+     * @Route("/alltickets", name="alltickets", methods="GET")
+     */
+    public function alltickets(TicketRepository $ticketRepository): Response
+    {
         return $this->render('ticket/index.html.twig', [
             'tickets' => $ticketRepository->findAll(),
+        ]);
+    }
+    /**
+     * @Route("/assignedtickets", name="assignedtickets", methods="GET")
+     */
+    public function assignedtickets(TicketRepository $ticketRepository): Response
+    {
+        $user = $this->getUser();
+        $tickets = $ticketRepository -> findBy(array('assignedTo' => $user));
+        return $this->render('ticket/index.html.twig', [
+            'tickets' => $tickets,
         ]);
     }
 
