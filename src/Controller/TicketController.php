@@ -10,6 +10,7 @@ use App\Form\TicketType;
 use App\Repository\CommentRepository;
 use App\Repository\StatusRepository;
 use App\Repository\TicketRepository;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -113,10 +114,11 @@ class TicketController extends AbstractController
     /**
      * @Route("/{id}", name="ticket_show", methods={"GET", "POST"})
      */
-    public function show(Ticket $ticket, Request $request, TicketRepository $ticketRepo, CommentRepository $commentRepo): Response
+    public function show(Ticket $ticket, Request $request, TicketRepository $ticketRepo, CommentRepository $commentRepo, StatusRepository $statusRepo): Response
     {
         $user = $this->getUser();
         $roles = $user->getRoles();
+
         $comments = $commentRepo->findBy(array('ticketID' => $ticket->getId()));
 
         $comment = new Comment();
@@ -127,7 +129,12 @@ class TicketController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             if (in_array("ROLE_AGENT", $roles)){
-                $comment->setPrivate($request->get('private'));
+                $checkbox = $request->get('private');
+                $comment->setPrivate(isset($checkbox));
+
+                $thisTicket= $ticketRepo->find($request->get('id'));
+                $thisTicket->setAssignedTo($user);
+                $thisTicket->setStatus($statusRepo->find(2));
 
             } elseif (in_array("ROLE_USER", $roles)) {
                 $comment->setPrivate(false);
@@ -142,6 +149,10 @@ class TicketController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($comment);
+
+            if(isset($thisTicket)){
+                $entityManager->persist($thisTicket);
+            }
             $entityManager->flush();
 
             return $this->redirectToRoute('ticket_show', ['id'=>$request->get('id')], Response::HTTP_SEE_OTHER);
