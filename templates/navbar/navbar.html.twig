@@ -2,7 +2,7 @@
     <ul>
         {% if is_granted('ROLE_USER')%}
         <li>
-            <a href="{{ path('_profiler_home') }}">Homepage</a>
+            <a href="{{ path('home_page') }}">Homepage</a>
         </li>
         <li>
             <a href="{{ path('app_logout') }}">Logout</a>
@@ -18,7 +18,7 @@
         {% endif %}
         {% if is_granted('ROLE_AGENT')%}
             <li>
-                <a href="{{ path('_profiler_phpinfo') }}">All Tickets</a>
+                <a href="{{ path('home_page') }}">All Tickets</a>
             </li>
         {% endif %}
     </ul>

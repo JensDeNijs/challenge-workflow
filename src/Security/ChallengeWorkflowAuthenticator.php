@@ -50,7 +50,7 @@ class ChallengeWorkflowAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('ticket_index'));
+        return new RedirectResponse($this->urlGenerator->generate('home_page'));
     }
 
     protected function getLoginUrl(Request $request): string
