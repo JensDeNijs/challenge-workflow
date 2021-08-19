@@ -3,11 +3,8 @@
 {% block title %}Ticket index{% endblock %}
 
 {% block body %}
-    {% if is_granted('ROLE_AGENT')%}
-        <h1>All Tickets</h1>
-    {% else %}
-        <h1>My Tickets</h1>
-    {% endif %}
+        <h1>{{ title }}</h1>
+
 
     <table class="table">
         <thead>

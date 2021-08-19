@@ -30,14 +30,17 @@ class TicketController extends AbstractController
 
        if (in_array("ROLE_AGENT", $roles)){
             $tickets = $ticketRepository -> findBy(array('assignedTo' => $user));
+            $title = 'All Tickets';
         }
 
         elseif (in_array("ROLE_USER", $roles)){
             $tickets = $ticketRepository -> findBy(array('createdBy' => $user));
+            $title = 'My Tickets';
         }
 
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,
+            'title' => $title,
         ]);
     }
 
@@ -50,6 +53,7 @@ class TicketController extends AbstractController
         $tickets = $ticketRepository -> findBy(array('createdBy' => $user));
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,
+            'title' => 'My Tickets'
         ]);
     }
 
@@ -60,6 +64,7 @@ class TicketController extends AbstractController
     {
         return $this->render('ticket/index.html.twig', [
             'tickets' => $ticketRepository->findAll(),
+            'title' => 'All Tickets'
         ]);
     }
     /**
@@ -71,6 +76,7 @@ class TicketController extends AbstractController
         $tickets = $ticketRepository -> findBy(array('assignedTo' => $user));
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,
+            'title' => 'My Assigned Tickets'
         ]);
     }
 
