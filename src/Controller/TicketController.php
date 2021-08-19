@@ -119,6 +119,7 @@ class TicketController extends AbstractController
         $user = $this->getUser();
         $roles = $user->getRoles();
 
+
         $comments = $commentRepo->findBy(array('ticketID' => $ticket->getId()));
 
         $comment = new Comment();
@@ -127,17 +128,18 @@ class TicketController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $thisTicket= $ticketRepo->find($request->get('id'));
             if (in_array("ROLE_AGENT", $roles)){
                 $checkbox = $request->get('private');
                 $comment->setPrivate(isset($checkbox));
 
-                $thisTicket= $ticketRepo->find($request->get('id'));
+
                 $thisTicket->setAssignedTo($user);
-                $thisTicket->setStatus($statusRepo->find(2));
+                $thisTicket->setStatus($statusRepo->find(3));
 
             } elseif (in_array("ROLE_USER", $roles)) {
                 $comment->setPrivate(false);
+                $thisTicket->setStatus($statusRepo->find(2));
             }
 
             $dateNow = new \DateTime('now' , new \DateTimeZone('Europe/Brussels'));
@@ -198,5 +200,22 @@ class TicketController extends AbstractController
         }
 
         return $this->redirectToRoute('ticket_index', [], Response::HTTP_SEE_OTHER);
+    }
+    /**
+     * @Route("/{id}/assign", name="ticket_assign", methods={"GET", "POST"})
+     */
+    public function assigneToMe(TicketRepository $ticketRepository, Request $request,StatusRepository $statusRepo): Response
+    {
+        $user = $this->getUser();
+
+        $thisTicket= $ticketRepository->find($request->get('id'));
+        $thisTicket->setAssignedTo($user);
+        $thisTicket->setStatus($statusRepo->find(2));
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($thisTicket);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('alltickets', [], Response::HTTP_SEE_OTHER);
     }
 }

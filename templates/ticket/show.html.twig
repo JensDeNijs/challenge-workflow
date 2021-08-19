@@ -17,6 +17,10 @@
             <td>{{ ticket.escalated ? 'Yes' : 'No' }}</td>
         </tr>
          {% endif %}
+         <tr>
+             <th>Customer name</th>
+             <td>{{ ticket.createdBy }}</td>
+         </tr>
         <tr>
             <th>Subject</th>
             <td>{{ ticket.subject }}</td>
@@ -29,6 +33,10 @@
             <th>DateClosed</th>
             <td>{{ ticket.dateClosed ? ticket.dateClosed|date('Y-m-d') : '' }}</td>
         </tr>
+         <tr>
+             <th>Status</th>
+             <td>{{ticket.status.status }}</td>
+         </tr>
         </tbody>
     </table>
 
@@ -47,9 +55,20 @@
     {{ form_end(form) }}
 
     <ul>
+        {% if is_granted('ROLE_AGENT')%}
+
         {% for comment in comments %}
             <li>{{ comment.comment }}</li>
         {% endfor %}
+
+        {% else %}
+
+        {% for comment in comments %}
+            {% if comment.private == false %}
+            <li>{{ comment.comment }}</li>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
     </ul>
 
 
