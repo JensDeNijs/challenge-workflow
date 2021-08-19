@@ -30,7 +30,7 @@ class TicketController extends AbstractController
 
        if (in_array("ROLE_AGENT", $roles)){
             $tickets = $ticketRepository -> findBy(array('assignedTo' => $user));
-            $title = 'All Tickets';
+            $title = 'Assigned Tickets';
         }
 
         elseif (in_array("ROLE_USER", $roles)){
@@ -63,7 +63,7 @@ class TicketController extends AbstractController
     public function alltickets(TicketRepository $ticketRepository): Response
     {
         return $this->render('ticket/index.html.twig', [
-            'tickets' => $ticketRepository->findAll(),
+            'tickets' => $ticketRepository->findBy(array('status' => 1)),
             'title' => 'All Tickets'
         ]);
     }
@@ -115,18 +115,23 @@ class TicketController extends AbstractController
      */
     public function show(Ticket $ticket, Request $request, TicketRepository $ticketRepo, CommentRepository $commentRepo): Response
     {
-
+        $user = $this->getUser();
+        $roles = $user->getRoles();
         $comments = $commentRepo->findBy(array('ticketID' => $ticket->getId()));
 
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
 
-        var_dump($request->get('id'));
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $comment->setPrivate(false);
+            if (in_array("ROLE_AGENT", $roles)){
+                $comment->setPrivate($request->get('private'));
+
+            } elseif (in_array("ROLE_USER", $roles)) {
+                $comment->setPrivate(false);
+            }
 
             $dateNow = new \DateTime('now' , new \DateTimeZone('Europe/Brussels'));
             $comment->setDate( $dateNow);
@@ -135,12 +140,11 @@ class TicketController extends AbstractController
             $comment->setUserID($this->get('security.token_storage')->getToken()->getUser());
 
 
-
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($comment);
             $entityManager->flush();
 
-            return $this->redirectToRoute('ticket_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('ticket_show', ['id'=>$request->get('id')], Response::HTTP_SEE_OTHER);
         }
 
 

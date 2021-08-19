@@ -29,7 +29,9 @@
                 <td>{{ ticket.createdBy }}</td>
                 <td>
                     <a href="{{ path('ticket_show', {'id': ticket.id}) }}">show</a>
+                   {# {% if is_granted('ROLE_AGENT')%}
                     <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>
+                    {% endif %}#}
                 </td>
             </tr>
         {% else %}

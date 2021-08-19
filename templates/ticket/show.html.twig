@@ -7,6 +7,7 @@
 
     <table class="table">
         <tbody>
+         {% if is_granted('ROLE_AGENT')%}
         <tr>
             <th>Id</th>
             <td>{{ ticket.id }}</td>
@@ -15,6 +16,7 @@
             <th>Escalated</th>
             <td>{{ ticket.escalated ? 'Yes' : 'No' }}</td>
         </tr>
+         {% endif %}
         <tr>
             <th>Subject</th>
             <td>{{ ticket.subject }}</td>
@@ -32,12 +34,15 @@
 
     <a href="{{ path('ticket_index') }}">back to list</a>
 
-    <a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>
 
-    {{ include('ticket/_delete_form.html.twig') }}
+
+    {#{{ include('ticket/_delete_form.html.twig') }}#}
 
     {{ form_start(form) }}
     {{ form_widget(form) }}
+    {% if is_granted('ROLE_AGENT')%}
+        <input type="checkbox" id="private" name="private" class="private"><label for="private">private</label>
+    {% endif%}
     <button class="btn">{{ button_label|default('Submit') }}</button>
     {{ form_end(form) }}
 
