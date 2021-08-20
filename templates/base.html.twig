@@ -1,4 +1,3 @@
-{% set condition = is_granted('ROLE_ADMIN') %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,9 +15,7 @@
     </head>
     <body>
 
-        {% include condition
-            ? 'navbar/navbar_admin.html.twig'
-            : 'navbar/navbar.html.twig' %}
+        {% include 'navbar/navbar.html.twig' %}
         {% block body %}{% endblock %}
     </body>
 </html>

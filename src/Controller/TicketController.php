@@ -29,7 +29,10 @@ class TicketController extends AbstractController
         $user = $this->getUser();
         $roles = $user->getRoles();
 
-       if (in_array("ROLE_AGENT", $roles)){
+        if (in_array("ROLE_ADMIN", $roles)){
+            return $this->redirectToRoute('manager', [], Response::HTTP_SEE_OTHER);
+        }
+       elseif (in_array("ROLE_AGENT", $roles)){
             $tickets = $ticketRepository -> findBy(array('assignedTo' => $user));
             $title = 'Assigned Tickets';
         }

@@ -24,5 +24,10 @@
                 <a href="{{ path('assignedtickets') }}">My Assigned Tickets</a>
             </li>
         {% endif %}
+        {% if is_granted('ROLE_AGENT')%}
+            <li>
+                <a href="{{ path('manager') }}">Admin dashboard</a>
+            </li>
+        {% endif %}
     </ul>
 </nav>
