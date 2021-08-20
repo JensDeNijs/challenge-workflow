@@ -2,11 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Form\UserType;
 use App\Repository\StatusRepository;
 use App\Repository\TicketRepository;
-use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -53,34 +50,5 @@ class ManagerController extends AbstractController
         return $this->redirectToRoute('manager', [], Response::HTTP_SEE_OTHER);
     }
 
-    /**
-     * @Route("/manageradminindex", name="manager_admin_index", methods={"GET"})
-     */
-    public function test(UserRepository $userRepository): Response
-    {
-        return $this->render('manager_admin/index.html.twig', [
-            'users' => $userRepository->findAll(),
-        ]);
-    }
-
-    /**
-     * @Route("/{id}/edit", name="manager_admin_edit", methods={"GET","POST"})
-     */
-    public function edit(Request $request, User $user): Response
-    {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('manager_admin_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('manager_admin/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
-    }
 
 }

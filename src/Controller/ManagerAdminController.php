@@ -26,6 +26,29 @@ class ManagerAdminController extends AbstractController
     }
 
     /**
+     * @Route("/new", name="manager_admin_new", methods={"GET","POST"})
+     */
+    public function new(Request $request): Response
+    {
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('manager_admin_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('manager_admin/new.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+
+    /**
      * @Route("/{id}", name="manager_admin_show", methods={"GET"})
      */
     public function show(User $user): Response
@@ -35,7 +58,25 @@ class ManagerAdminController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/{id}/edit", name="manager_admin_edit", methods={"GET","POST"})
+     */
+    public function edit(Request $request, User $user): Response
+    {
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('manager_admin_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('manager_admin/edit.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
 
     /**
      * @Route("/{id}", name="manager_admin_delete", methods={"POST"})
