@@ -118,6 +118,13 @@ class TicketController extends AbstractController
     {
         $user = $this->getUser();
         $roles = $user->getRoles();
+        $thisTicket= $ticketRepo->find($request->get('id'));
+
+        if ($thisTicket->getStatus()->getId() === 4){
+            $isClosed = true;
+        }else{
+            $isClosed = false;
+        }
 
 
         $comments = $commentRepo->findBy(array('ticketID' => $ticket->getId()));
@@ -128,14 +135,22 @@ class TicketController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $thisTicket= $ticketRepo->find($request->get('id'));
-            if (in_array("ROLE_AGENT", $roles)){
-                $checkbox = $request->get('private');
-                $comment->setPrivate(isset($checkbox));
 
+            if (in_array("ROLE_AGENT", $roles)){
+
+                $radioBTN= $request->get('closePrivate');
+                if ($radioBTN === 'private'){
+                    $comment->setPrivate(true);
+                }elseif ($radioBTN === 'close'){
+                    $thisTicket->setStatus($statusRepo->find(4));
+                    $comment->setPrivate(false);
+                }elseif ($radioBTN === 'nothing'){
+                    $thisTicket->setStatus($statusRepo->find(3));
+                    $comment->setPrivate(false);
+                }
 
                 $thisTicket->setAssignedTo($user);
-                $thisTicket->setStatus($statusRepo->find(3));
+
 
             } elseif (in_array("ROLE_USER", $roles)) {
                 $comment->setPrivate(false);
@@ -165,6 +180,7 @@ class TicketController extends AbstractController
             'comments' => $comments,
             'ticket' => $ticket,
             'form' => $form,
+            'isClosed' => $isClosed,
         ]);
     }
 

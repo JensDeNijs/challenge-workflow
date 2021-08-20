@@ -45,14 +45,23 @@
 
 
     {#{{ include('ticket/_delete_form.html.twig') }}#}
-
+    {% if (is_granted('ROLE_USER') and isClosed == false) or is_granted('ROLE_AGENT') %}
     {{ form_start(form) }}
     {{ form_widget(form) }}
+
     {% if is_granted('ROLE_AGENT')%}
-        <input type="checkbox" id="private" name="private" class="private"><label for="private">private</label>
+        {#<input type="checkbox" id="private" name="private" class="private"><label for="private">private</label>
+        <input type="checkbox" id="close" name="close" class="close"><label for="close">close</label>#}
+        <input type="radio" id="nothing" name="closePrivate" value="nothing">
+        <label for="nothing">Ask for feedback</label><br>
+        <input type="radio" id="private" name="closePrivate" value="private">
+        <label for="private">Private comment</label><br>
+        <input type="radio" id="close" name="closePrivate" value="close">
+        <label for="close">Close this ticket</label><br>
     {% endif%}
     <button class="btn">{{ button_label|default('Submit') }}</button>
     {{ form_end(form) }}
+    {% endif %}
 
     <ul>
         {% if is_granted('ROLE_AGENT')%}
