@@ -54,7 +54,8 @@ class TicketController extends AbstractController
         $tickets = $ticketRepository -> findBy(array('createdBy' => $user));
         return $this->render('ticket/index.html.twig', [
             'tickets' => $tickets,
-            'title' => 'My Tickets'
+            'title' => 'My Tickets',
+            'create' => true,
         ]);
     }
 
@@ -63,9 +64,23 @@ class TicketController extends AbstractController
      */
     public function alltickets(TicketRepository $ticketRepository): Response
     {
+        $user = $this->getUser();
+        $roles = $user->getRoles();
+
+        if (in_array("ROLE_SECONDAGENT", $roles)){
+            $tickets = $ticketRepository->findBy(array('status' => 1, 'escalated' => 1));
+            $title = 'All escalated Tickets';
+        }
+
+        elseif (in_array("ROLE_AGENT", $roles)){
+            $tickets = $ticketRepository -> findBy(array('status' => 1, 'escalated' => 0));
+            $title = 'All Tickets';
+        }
+
         return $this->render('ticket/index.html.twig', [
-            'tickets' => $ticketRepository->findBy(array('status' => 1)),
-            'title' => 'All Tickets'
+            'tickets' => $tickets,
+            'title' => $title,
+            'assign' => true,
         ]);
     }
     /**
@@ -233,5 +248,22 @@ class TicketController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('alltickets', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @Route("/{id}/escalate", name="ticket_escalate", methods={"GET", "POST"})
+     */
+    public function escalate(TicketRepository $ticketRepository, Request $request,StatusRepository $statusRepo): Response
+    {
+        $thisTicket= $ticketRepository->find($request->get('id'));
+        $thisTicket->setAssignedTo(null);
+        $thisTicket->setStatus($statusRepo->find(1));
+        $thisTicket->setEscalated(1);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($thisTicket);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('assignedtickets', [], Response::HTTP_SEE_OTHER);
     }
 }

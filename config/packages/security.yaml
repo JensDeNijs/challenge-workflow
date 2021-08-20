@@ -37,7 +37,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     role_hierarchy:
         ROLE_AGENT: ROLE_USER
-        ROLE_ADMIN: [ ROLE_AGENT, ROLE_USER ]
+        ROLE_SECONDAGENT: ROLE_AGENT
+        ROLE_ADMIN: [ROLE_AGENT, ROLE_USER]
 
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }

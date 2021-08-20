@@ -29,7 +29,7 @@
                 <td>{{ ticket.createdBy }}</td>
                 <td>
                     <a href="{{ path('ticket_show', {'id': ticket.id}) }}">show</a>
-                   {% if is_granted('ROLE_AGENT')%}
+                   {% if is_granted('ROLE_AGENT') and assign is defined%}
                        <a href="{{ path('ticket_assign', {'id': ticket.id}) }}">assign to me</a>
                    {% endif %}
                     {#<a href="{{ path('ticket_edit', {'id': ticket.id}) }}">edit</a>#}
@@ -43,6 +43,7 @@
         {% endfor %}
         </tbody>
     </table>
-
+    {% if create is defined %}
     <a href="{{ path('ticket_new') }}">Create new</a>
+    {% endif %}
 {% endblock %}

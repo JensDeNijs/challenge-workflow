@@ -62,7 +62,9 @@
     <button class="btn">{{ button_label|default('Submit') }}</button>
     {{ form_end(form) }}
     {% endif %}
-
+    {% if is_granted('ROLE_AGENT') and is_granted('ROLE_SECONDAGENT') == false%}
+        <button><a href="{{ path('ticket_escalate', {'id': ticket.id}) }}">escalate ticket</a></button>
+    {% endif %}
     <ul>
         {% if is_granted('ROLE_AGENT')%}
 
