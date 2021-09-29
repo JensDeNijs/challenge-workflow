@@ -5,7 +5,7 @@ We have 5 different users in our system that have different abilities:
 
 
 ### Guest
-- Can register himself to become a Customer.
+- - [ x ] Can register himself to become a Customer.
 - Can login to become another role (based on credentials)
 - Provide a "forgot my password" functionality
 
